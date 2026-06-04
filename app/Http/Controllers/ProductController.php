@@ -21,6 +21,96 @@ class ProductController extends Controller
         
     }
 
+    public function purchase()
+    {
+        $products = Product::all();
+
+        $cart = session()->get('cart', []);
+        $total = collect($cart)->sum('subtotal');
+
+        return view('product.purchase_product', compact('products', 'cart', 'total'));
+    }
+
+public function addToCart(Request $request)
+{
+    try {
+        $product = Product::find($request->input('product_id'));
+
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        $cart = session()->get('cart', []);
+
+        $id = $product->product_id;
+
+        if (isset($cart[$id])) {
+            $cart[$id]['qty']++;
+            $cart[$id]['subtotal'] = $cart[$id]['qty'] * $product->price;
+        } else {
+            $cart[$id] = [
+                'name' => $product->product_name,
+                'qty' => 1,
+                'price' => $product->price,
+                'subtotal' => $product->price,
+            ];
+        }
+
+        session()->put('cart', $cart);
+
+        return response()->json([
+            'success' => true,
+            'cart' => $cart,
+            'total' => collect($cart)->sum('subtotal'),
+            'id' => $id
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function removeFromCart(Request $request)
+{
+    try {
+        $cart = session()->get('cart', []);
+        $id = $request->input('product_id');
+        unset($cart[$id]);
+        session()->put('cart', $cart);
+
+        return response()->json([
+            'success' => true,
+            'cart' => $cart,
+            'total' => collect($cart)->sum('subtotal')
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function storePurchase()
+{
+    $cart = session()->get('cart', []);
+
+    // Save purchase to database here
+
+    session()->forget('cart');
+
+    return redirect()
+        ->back()
+        ->with('purchase_success','Purchase completed');
+}
+
     /**
      * Show the form for creating a new resource.
      */
@@ -86,16 +176,13 @@ class ProductController extends Controller
 
         $product->update([
             'product_name' => request('product_name'),
-            'product_category' => request('product_category'),
-            'product_price' => request('product_price'),
-            'product_quantity' => request('product_quantity')
+            'category' => request('product_category'),
+            'price' => request('product_price'),
+            'quantity' => request('product_quantity')
         ]);
 
-            return response()->json([
-                'message' => 'Update successfully!'
-            ]);
+        return redirect()->route('product-table')->with('updated', 'Product updated successfully!');
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -103,8 +190,8 @@ class ProductController extends Controller
         {
             $product->delete();
 
-            return response()->json([
-                'message' => 'Product deleted successfully!'
-            ]);
-        }
+    return redirect()
+        ->route('product-table');
+  }
 }
+

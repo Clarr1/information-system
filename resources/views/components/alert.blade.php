@@ -9,6 +9,29 @@ Swal.fire({
 </script>
 @endif
 
+@if(session('purchase_success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: @json(session('purchase_success')),
+    confirmButtonColor: '#3085d6'
+});
+</script>
+@endif
+
+{{-- for update --}}
+@if(session('updated'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: @json(session('updated')),
+    confirmButtonColor: '#3085d6'
+});
+</script>
+@endif
+
 <script>
 function confirmDelete(id) {
     Swal.fire({

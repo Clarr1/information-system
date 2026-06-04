@@ -19,6 +19,13 @@ class Product extends Model
         'product_name',
         'category',
         'price',
-        'quantity'
+        'quantity',
+        'low_stock_threshold',
     ];
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+    
 }

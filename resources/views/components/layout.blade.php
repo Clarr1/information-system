@@ -25,6 +25,7 @@
         <li><a href="/">Home</a></li>
         <li><a href="/add-product">Add product</a></li>
         <li><a href="/product-table">Product List</a></li>
+        <li><a href="/purchase-product">Purchase Product</a></li>
       </ul>
     </div>
   </div>
