@@ -29,10 +29,10 @@
 
             <div>
                 <p class="text-sm text-gray-700 leading-5 dark:text-gray-600">
-                    {!! __('Showing') !!}
+                    {!! __('Page') !!}
                     @if ($paginator->firstItem())
                         <span class="font-medium">{{ $paginator->firstItem() }}</span>
-                        {!! __('to') !!}
+                        {!! __('-') !!}
                         <span class="font-medium">{{ $paginator->lastItem() }}</span>
                     @else
                         {{ $paginator->count() }}

@@ -6,12 +6,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DashBoardController;
 
-
-
-Route::get('/', function () {
-    return view('product.home');
-})->middleware('auth');
+Route::get('/', [DashboardController::class, 'index'])
+    ->middleware('auth');
 
 Route::get('/add-product', function () {
     return view('product.add_product');
@@ -46,4 +45,14 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+
+Route::post('/cart/increase/{id}', [PurchaseController::class, 'increaseQty']);
+Route::post('/cart/decrease/{id}', [PurchaseController::class, 'decreaseQty']);
+
+// activity logs
+Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+
+//purchase history
+Route::get('/purchase-history', [PurchaseController::class, 'history'])->name('purchase-history')->middleware('auth');
